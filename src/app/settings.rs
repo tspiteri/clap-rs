@@ -40,6 +40,18 @@ bitflags! {
 #[derive(Debug)]
 pub struct AppFlags(Flags);
 
+impl AppFlags {
+    pub fn as_u32(&self) -> u32 {
+        self.0.bits
+    }
+}
+
+impl From<u32> for AppFlags {
+    fn from(u: u32) -> Self {
+        AppFlags (Flags { bits: u })
+    }
+}
+
 impl Clone for AppFlags {
     fn clone(&self) -> Self { AppFlags(self.0) }
 }

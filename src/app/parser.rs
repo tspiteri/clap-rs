@@ -79,7 +79,7 @@ impl<'a, 'b> Default for Parser<'a, 'b> {
             groups: HashMap::new(),
             global_args: vec![],
             overrides: vec![],
-            g_settings: vec![],
+            g_settings: AppFlags::new(),
             settings: AppFlags::new(),
             meta: AppMeta::new(),
             trailing_vals: false,
@@ -134,6 +134,14 @@ impl<'a, 'b> Parser<'a, 'b>
         };
         self.gen_completions_to(for_shell, &mut file)
     }
+
+    pub fn gen_compile_time_app(&mut self) {
+        self.propogate_help_version();
+        self.build_bin_names();
+
+        AppGen::new(self).generate(&mut io::stdout());
+    }
+
 
     // actually adds the arguments
     pub fn add_arg(&mut self, a: &Arg<'a, 'b>) {
