@@ -24,6 +24,12 @@ bitflags! {
 #[derive(Debug, Clone, Copy)]
 pub struct ArgFlags(Flags);
 
+impl From<u16> for ArgFlags {
+    fn from(u: u16) -> Self {
+        ArgFlags(Flags{bits: u})
+    }
+}
+
 impl ArgFlags {
     pub fn new() -> Self { ArgFlags::default() }
 

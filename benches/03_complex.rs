@@ -42,6 +42,245 @@ macro_rules! create_app {
     })
 }
 
+macro_rules! create_app_compile_time {
+    () => {{
+        let req = Vec::with_capacity(0);
+        let mut sl = Vec::with_capacity(4);
+        sl.push('f');
+        sl.push('o');
+        sl.push('F');
+        sl.push('O');
+        let mut ll = Vec::with_capacity(8);
+        ll.push("flag");
+        ll.push("option");
+        ll.push("long-option-2");
+        ll.push("Option");
+        ll.push("multvals");
+        ll.push("multvalsmo");
+        ll.push("minvals2");
+        ll.push("maxvals3");
+        let mut bl = Vec::with_capacity(0);
+        let mut ol = Vec::with_capacity(0);
+        let mut pos = VecMap::with_capacity(3);
+        pos.insert(1, PosBuilder {
+
+        })
+        pos.insert(2, PosBuilder {
+            
+        })
+        pos.insert(3, PosBuilder {
+            
+        })
+        let mut sc = Vec::with_capacity(1);
+        vec.push(App {
+            p: Parser {
+
+            }
+        });
+        let mut flags = Vec::with_capacity(2);
+        flags.push(FlagBuilder {
+            b: Base {
+                name: "flag",
+                help: Some("tests flags"),
+                id: 0,
+                kind: ArgKind::Flag,
+                blacklist: None,
+                settings: ArgSettings::from(0),
+                r_unless: None,
+                overrides: None,
+                requires: None,
+                groups: None,
+            },
+            s: Switched {
+                short: Some('f'),
+                long: Some("flag"),
+                aliases: None,
+                disp_ord: 999,
+                unified_ord: 999,
+            },
+        });
+        flags.push(FlagBuilder {
+            b: Valued {
+                name: "flag2",
+                help: Some("tests flags"),
+                id: 0,
+                kind: ArgKind::Flag,
+                blacklist: vec!["flag"],
+                settings: ArgSettings::from(0),
+                r_unless: None,
+                overrides: None,
+                requires: vec!["option2"],
+                groups: None,
+            },
+            s: Switched {
+                short: Some('F'),
+                long: None,
+                aliases: None,
+                disp_ord: 999,
+                unified_ord: 999,
+            },
+        });
+        let mut opts = Vec::with_capacity(7);
+        opts.push(OptBuilder {
+            b: Base {
+                name: "long-option-2",
+                help: Some("tests long options with exclusions"),
+                id: 0,
+                kind: ArgKind::Flag,
+                blacklist: Some(vec!["option"]),
+                settings: ArgSettings::from(0),
+                r_unless: None,
+                overrides: None,
+                requires: Some(vec!["positional2"]),
+                groups: None,
+            },
+            s: Switched {
+                short: None,
+                long: Some("long-option-2"),
+                aliases: None,
+                disp_ord: 999,
+                unified_ord: 999,
+            },
+            v: Valued {
+                possible_vals: None,
+                num_vals: None,
+                min_vals: None,
+                max_vals: None,
+                val_names: None,
+                validator: None,
+                val_delim: Some(','),
+                default_val: None,
+            }
+        });
+        opts.push(OptBuilder {
+            b: Base {
+                name: "option",
+                help: Some("tests long options with exclusions"),
+                id: 0,
+                kind: ArgKind::Flag,
+                blacklist: Vec::with_capacity(0),
+                settings: ArgSettings::from(0b0000000000010),
+                r_unless: None,
+                overrides: None,
+                requires: None,
+                groups: None,
+            },
+            s: Switched {
+                short: None,
+                long: Some("long-option-2"),
+                aliases: None,
+                disp_ord: 999,
+                unified_ord: 999,
+            },
+            v: Valued {
+                possible_vals: None,
+                num_vals: None,
+                min_vals: None,
+                max_vals: None,
+                val_names: None,
+                validator: None,
+                val_delim: Some(','),
+                default_val: None,
+            }
+        });
+static ARGS: &'static str = "-o --option=[opt]... 'tests options'
+                             [positional] 'tests positionals'";
+                .args(&[
+                          Arg::from_usage("[positional2] 'tests positionals with exclusions'"),
+                          Arg::from_usage("-O --Option [option3] 'tests options with specific value sets'").possible_values(&OPT3_VALS),
+                          Arg::from_usage("[positional3]... 'tests positionals with specific values'").possible_values(&POS3_VALS),
+                          Arg::from_usage("--multvals [one] [two] 'Tests mutliple values, not mult occs'"),
+                          Arg::from_usage("--multvalsmo... [one] [two] 'Tests mutliple values, not mult occs'"),
+                          Arg::from_usage("--minvals2 [minvals]... 'Tests 2 min vals'").min_values(2),
+                          Arg::from_usage("--maxvals3 [maxvals]... 'Tests 3 max vals'").max_values(3)
+                    ])
+        opts.push(OptBuilder {
+
+        });
+        opts.push(OptBuilder {
+
+        });
+        opts.push(OptBuilder {
+
+        });
+        opts.push(OptBuilder {
+
+        });
+        opts.push(OptBuilder {
+
+        });
+
+
+        let mut ga = Vec::with_capacity(1);
+        ga.push(FlagBuilder {
+            b: {
+                name: "flag",
+                help: Some("tests flags"),
+                id: 0,
+                kind: ArgKind::Flag,
+                blacklist: None,
+                settings: ArgSettings::from(0),
+                r_unless: None,
+                overrides: None,
+                requires: None,
+                groups: None,
+            },
+            s: {
+                short: Some('f'),
+                long: Some("flag"),
+                aliases: None,
+                disp_ord: 999,
+                unified_ord: 999,
+            },
+        });
+
+        App {
+            p: Parser {
+                required: req,
+                short_list: sl,
+                long_list: ll,
+                blacklist: bl,
+                flags: flags,
+                opts: opts,
+                positionals: pos,
+                subcommands: sc,
+                groups: HashMap::with_capacity(0),
+                global_args: ga,
+                overrides: or,
+                help_short: Some('h'),
+                version_short: Some('V'),
+                settings: AppFlags::from(0),
+                g_settings: AppFlags::from(0),
+                meta: AppMeta {
+                    name: "claptests".to_string(),
+                    author: Some("Kevin K. <kbknapp@gmail.com>"),
+                    about: Some("tests clap library"),
+                    more_help: None,
+                    pre_help: None,
+                    version: Some("0.1"),
+                    usage_str: None,
+                    usage: None,
+                    bin_name: None,
+                    help_str: None,
+                    disp_ord: 999,
+                    template: None,
+                    aliases: None,
+                    term_w: None,
+                    max_w: None,
+                },
+                trailing_vals: false,
+                id: 0,
+                valid_neg_num: false,
+            }
+                .subcommand(SubCommand::with_name("subcmd")
+                                        .about("tests subcommands")
+                                        .version("0.1")
+                                        .author("Kevin K. <kbknapp@gmail.com>")
+                                        .arg_from_usage("-o --option [scoption]... 'tests options'")
+                                        .arg_from_usage("[scpositional] 'tests positionals'"))
+    }};
+}
+
 #[bench]
 fn create_app_from_usage(b: &mut Bencher) {
 
