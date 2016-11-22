@@ -1,0 +1,138 @@
+
+running 2 tests
+test build_app   ... bench:          53 ns/iter (+/- 32)
+test parse_clean ... bench:         413 ns/iter (+/- 4)
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 2 measured
+
+
+running 6 tests
+test build_app        ... bench:         975 ns/iter (+/- 43)
+test parse_clean      ... bench:       1,545 ns/iter (+/- 13)
+test parse_complex    ... bench:       2,671 ns/iter (+/- 97)
+test parse_flag       ... bench:       1,940 ns/iter (+/- 16)
+test parse_option     ... bench:       2,135 ns/iter (+/- 60)
+test parse_positional ... bench:       1,986 ns/iter (+/- 29)
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 6 measured
+
+
+running 14 tests
+test create_app_builder    ... bench:       3,765 ns/iter (+/- 65)
+test create_app_from_usage ... bench:       3,913 ns/iter (+/- 194)
+test create_app_macros     ... bench:       3,620 ns/iter (+/- 55)
+test parse_clean           ... bench:       4,729 ns/iter (+/- 96)
+test parse_complex1        ... bench:       7,848 ns/iter (+/- 1,323)
+test parse_complex2        ... bench:       8,348 ns/iter (+/- 82)
+test parse_flag            ... bench:       5,077 ns/iter (+/- 65)
+test parse_option          ... bench:       5,325 ns/iter (+/- 88)
+test parse_positional      ... bench:       5,424 ns/iter (+/- 584)
+test parse_sc_clean        ... bench:       5,891 ns/iter (+/- 67)
+test parse_sc_complex      ... bench:       6,865 ns/iter (+/- 99)
+test parse_sc_flag         ... bench:       6,157 ns/iter (+/- 190)
+test parse_sc_option       ... bench:       6,458 ns/iter (+/- 90)
+test parse_sc_positional   ... bench:       6,206 ns/iter (+/- 74)
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 14 measured
+
+
+running 10 tests
+test example1          ... bench:      11,406 ns/iter (+/- 395)
+test example10         ... bench:       3,880 ns/iter (+/- 57)
+test example2          ... bench:         656 ns/iter (+/- 8)
+test example3          ... bench:      10,638 ns/iter (+/- 100)
+test example4          ... bench:       8,627 ns/iter (+/- 3,032)
+test example4_template ... bench:       6,595 ns/iter (+/- 398)
+test example5          ... bench:       3,538 ns/iter (+/- 71)
+test example6          ... bench:       2,954 ns/iter (+/- 67)
+test example7          ... bench:       4,507 ns/iter (+/- 58)
+test example8          ... bench:       4,501 ns/iter (+/- 51)
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 10 measured
+
+
+running 81 tests
+test app::settings::test::app_settings_fromstr ... ignored
+test args::arg_builder::flag::test::flagbuilder_display ... ignored
+test args::arg_builder::flag::test::flagbuilder_display_multiple_aliases ... ignored
+test args::arg_builder::flag::test::flagbuilder_display_single_alias ... ignored
+test args::arg_builder::option::test::optbuilder_display1 ... ignored
+test args::arg_builder::option::test::optbuilder_display2 ... ignored
+test args::arg_builder::option::test::optbuilder_display3 ... ignored
+test args::arg_builder::option::test::optbuilder_display_multiple_aliases ... ignored
+test args::arg_builder::option::test::optbuilder_display_single_alias ... ignored
+test args::arg_builder::positional::test::display_mult ... ignored
+test args::arg_builder::positional::test::display_required ... ignored
+test args::arg_builder::positional::test::display_val_names ... ignored
+test args::arg_builder::positional::test::display_val_names_req ... ignored
+test args::group::test::groups ... ignored
+test args::group::test::test_debug ... ignored
+test args::group::test::test_from ... ignored
+test args::settings::test::arg_settings_fromstr ... ignored
+test fmt::test::colored_output ... ignored
+test usage_parser::test::create_flag_usage ... ignored
+test usage_parser::test::create_option_usage0 ... ignored
+test usage_parser::test::create_option_usage1 ... ignored
+test usage_parser::test::create_option_usage2 ... ignored
+test usage_parser::test::create_option_usage3 ... ignored
+test usage_parser::test::create_option_usage4 ... ignored
+test usage_parser::test::create_option_usage5 ... ignored
+test usage_parser::test::create_option_usage6 ... ignored
+test usage_parser::test::create_option_usage7 ... ignored
+test usage_parser::test::create_option_usage8 ... ignored
+test usage_parser::test::create_option_usage9 ... ignored
+test usage_parser::test::create_option_usage_both1 ... ignored
+test usage_parser::test::create_option_usage_both2 ... ignored
+test usage_parser::test::create_option_usage_both3 ... ignored
+test usage_parser::test::create_option_usage_both4 ... ignored
+test usage_parser::test::create_option_usage_both5 ... ignored
+test usage_parser::test::create_option_usage_both6 ... ignored
+test usage_parser::test::create_option_usage_both7 ... ignored
+test usage_parser::test::create_option_usage_both8 ... ignored
+test usage_parser::test::create_option_usage_both_equals1 ... ignored
+test usage_parser::test::create_option_usage_both_equals2 ... ignored
+test usage_parser::test::create_option_usage_both_equals3 ... ignored
+test usage_parser::test::create_option_usage_both_equals4 ... ignored
+test usage_parser::test::create_option_usage_both_equals5 ... ignored
+test usage_parser::test::create_option_usage_both_equals6 ... ignored
+test usage_parser::test::create_option_usage_both_equals7 ... ignored
+test usage_parser::test::create_option_usage_both_equals8 ... ignored
+test usage_parser::test::create_option_usage_long1 ... ignored
+test usage_parser::test::create_option_usage_long10 ... ignored
+test usage_parser::test::create_option_usage_long2 ... ignored
+test usage_parser::test::create_option_usage_long3 ... ignored
+test usage_parser::test::create_option_usage_long4 ... ignored
+test usage_parser::test::create_option_usage_long5 ... ignored
+test usage_parser::test::create_option_usage_long6 ... ignored
+test usage_parser::test::create_option_usage_long7 ... ignored
+test usage_parser::test::create_option_usage_long8 ... ignored
+test usage_parser::test::create_option_usage_long9 ... ignored
+test usage_parser::test::create_option_usage_long_equals1 ... ignored
+test usage_parser::test::create_option_usage_long_equals10 ... ignored
+test usage_parser::test::create_option_usage_long_equals2 ... ignored
+test usage_parser::test::create_option_usage_long_equals3 ... ignored
+test usage_parser::test::create_option_usage_long_equals4 ... ignored
+test usage_parser::test::create_option_usage_long_equals5 ... ignored
+test usage_parser::test::create_option_usage_long_equals6 ... ignored
+test usage_parser::test::create_option_usage_long_equals7 ... ignored
+test usage_parser::test::create_option_usage_long_equals8 ... ignored
+test usage_parser::test::create_option_usage_long_equals9 ... ignored
+test usage_parser::test::create_option_with_vals1 ... ignored
+test usage_parser::test::create_option_with_vals2 ... ignored
+test usage_parser::test::create_option_with_vals3 ... ignored
+test usage_parser::test::create_option_with_vals4 ... ignored
+test usage_parser::test::create_option_with_vals5 ... ignored
+test usage_parser::test::create_positional_usage ... ignored
+test usage_parser::test::create_positional_usage0 ... ignored
+test usage_parser::test::nonascii ... ignored
+test usage_parser::test::pos_help_double_lit_single_quote ... ignored
+test usage_parser::test::pos_help_lit_single_quote ... ignored
+test usage_parser::test::pos_help_newline ... ignored
+test usage_parser::test::pos_help_newline_lit_sq ... ignored
+test usage_parser::test::pos_mult ... ignored
+test usage_parser::test::pos_mult_help ... ignored
+test usage_parser::test::pos_req ... ignored
+test usage_parser::test::pos_req_mult_help ... ignored
+
+test result: ok. 0 passed; 0 failed; 81 ignored; 0 measured
+

@@ -680,9 +680,9 @@ impl<'a, 'b> Parser<'a, 'b>
     #[inline]
     fn check_is_new_arg(&mut self, arg_os: &OsStr, needs_val_of: Option<&'a str>) -> bool {
         debugln!("fn=check_is_new_arg;nvo={:?}", needs_val_of);
-        let app_wide_settings = if self.is_set(AppSettings::AllowLeadingHyphen) {
+        let app_wide_settings = if unlikely!(self.is_set(AppSettings::AllowLeadingHyphen)) {
             true
-        } else if self.is_set(AppSettings::AllowNegativeNumbers) {
+        } else if unlikely!(self.is_set(AppSettings::AllowNegativeNumbers)) {
             let a = arg_os.to_string_lossy();
             if a.parse::<i64>().is_ok() || a.parse::<f64>().is_ok() {
                 self.valid_neg_num = true;
@@ -1337,7 +1337,7 @@ impl<'a, 'b> Parser<'a, 'b>
 
         // If AllowLeadingHyphen is set, we want to ensure `-val` gets parsed as `-val` and not `-v` `-a` `-l` assuming
         // `v` `a` and `l` are all, or mostly, valid shorts.
-        if self.is_set(AppSettings::AllowLeadingHyphen) {
+        if unlikely!(self.is_set(AppSettings::AllowLeadingHyphen)) {
             let mut good = true;
             for c in arg.chars() {
                 good = self.short_list.contains(&c);
@@ -1345,7 +1345,7 @@ impl<'a, 'b> Parser<'a, 'b>
             if !good {
                 return Ok(None);
             }
-        } else if self.valid_neg_num {
+        } else if unlikely!(self.valid_neg_num) {
             // TODO: Add docs about having AllowNegativeNumbers and `-2` as a valid short
             // May be better to move this to *after* not finding a valid flag/opt?
             debugln!("Valid negative num...");

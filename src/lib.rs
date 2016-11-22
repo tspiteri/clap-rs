@@ -526,6 +526,7 @@
 #![cfg_attr(feature = "lints", deny(warnings))]
 #![cfg_attr(feature = "lints", allow(cyclomatic_complexity))]
 #![cfg_attr(feature = "lints", allow(doc_markdown))]
+// #![cfg_attr(all(feature = "nightly", feature = "intrinsics"), core_intrinsics)]
 
 #[cfg(feature = "suggestions")]
 extern crate strsim;
