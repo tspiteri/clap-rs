@@ -666,23 +666,8 @@ macro_rules! vec_remove_all {
     };
 }
 
-// uses intrinsics if enabled, otherwise not
-macro_rules! likely {
-    ($e:expr) => {
-        if cfg!(all(feature = "intrinsics", feature = "nightly")) {
-            unsafe { ::std::intrinsics::likely($e) }
-        } else {
-            $e
-        }
-    }
-}
-
-macro_rules! unlikely {
-    ($e:expr) => {
-        if cfg!(all(feature = "intrinsics", feature = "nightly")) {
-            unsafe { ::std::intrinsics::unlikely($e) }
-        } else {
-            $e
-        }
+macro_rules! memcmp {
+    ($a:expr, $b:expr) => {
+        $a.as_bytes().memcmp($b.as_bytes())
     }
 }

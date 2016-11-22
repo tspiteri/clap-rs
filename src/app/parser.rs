@@ -4,14 +4,17 @@ use std::ffi::{OsStr, OsString};
 use std::fmt::Display;
 use std::fs::File;
 use std::io::{self, BufWriter, Write};
-#[cfg(feature = "debug")]
-use std::os::unix::ffi::OsStrExt;
 use std::path::PathBuf;
 use std::slice::Iter;
 use std::iter::Peekable;
+#[cfg(any(feature = "debug", not(target = "windows")))]
+use std::os::unix::ffi::OsStrExt;
+#[cfg(any(all(feature = "debug", target = "windows"), target = "windows"))]
+use osstringext::OsStrExt3;
 
 // Third Party
 use vec_map::{self, VecMap};
+use memcmp::Memcmp;
 
 // Internal
 use INTERNAL_ERROR_MSG;
@@ -158,9 +161,9 @@ impl<'a, 'b> Parser<'a, 'b>
                           format!("Argument long must be unique\n\n\t--{} is already in use",
                                   l));
             self.long_list.push(l);
-            if l == "help" {
+            if l.as_bytes().memcmp("help".as_bytes()) {
                 self.unset(AppSettings::NeedsLongHelp);
-            } else if l == "version" {
+            } else if l.as_bytes().memcmp("version".as_bytes()) {
                 self.unset(AppSettings::NeedsLongVersion);
             }
         }
@@ -230,7 +233,7 @@ impl<'a, 'b> Parser<'a, 'b>
         debugln!("Term width...{:?}", self.meta.term_w);
         subcmd.p.meta.term_w = self.meta.term_w;
         debug!("Is help...");
-        if subcmd.p.meta.name == "help" {
+        if subcmd.p.meta.name.as_bytes().memcmp("help".as_bytes()) {
             sdebugln!("Yes");
             self.settings.set(AppSettings::NeedsSubcommandHelp);
         } else {
@@ -306,9 +309,9 @@ impl<'a, 'b> Parser<'a, 'b>
         let mut c_opt: Vec<&str> = vec![];
         let mut grps: Vec<&str> = vec![];
         for name in reqs {
-            if self.flags.iter().any(|f| &f.b.name == name) {
+            if self.flags.iter().any(|f| memcmp!(f.b.name, name)) {
                 c_flags.push(name);
-            } else if self.opts.iter().any(|o| &o.b.name == name) {
+            } else if self.opts.iter().any(|o| memcmp!(o.b.name, name)) {
                 c_opt.push(name);
             } else if self.groups.contains_key(name) {
                 grps.push(name);
@@ -324,15 +327,15 @@ impl<'a, 'b> Parser<'a, 'b>
                 $gv:ident, $tmp:ident
             }) => {
                 for a in &$v1 {
-                    if let Some(a) = self.$t1.$i1().filter(|arg| &arg.b.name == a).next() {
+                    if let Some(a) = self.$t1.$i1().filter(|arg| memcmp!(arg.b.name, a)).next() {
                         if let Some(ref rl) = a.b.requires {
                             for r in rl {
                                 if !reqs.contains(r) {
-                                    if $_self.$t1.$i1().any(|t| &t.b.name == r) {
+                                    if $_self.$t1.$i1().any(|t| memcmp!(t.b.name, r)) {
                                         $tmp.push(*r);
-                                    } else if $_self.$t2.$i2().any(|t| &t.b.name == r) {
+                                    } else if $_self.$t2.$i2().any(|t| memcmp!(t.b.name, r)) {
                                         $v2.push(r);
-                                    } else if $_self.$t3.$i3().any(|t| &t.b.name == r) {
+                                    } else if $_self.$t3.$i3().any(|t| memcmp!(t.b.name, r)) {
                                         $v3.push(r);
                                     } else if $_self.groups.contains_key(r) {
                                         $gv.push(r);
@@ -378,7 +381,7 @@ impl<'a, 'b> Parser<'a, 'b>
 
         let pmap = c_pos.into_iter()
             .filter(|&p| matcher.is_none() || !matcher.as_ref().unwrap().contains(p))
-            .filter_map(|p| self.positionals.values().find(|x| x.b.name == p))
+            .filter_map(|p| self.positionals.values().find(|x| memcmp!(x.b.name, p)))
             .filter(|p| !args_in_groups.contains(&p.b.name))
             .map(|p| (p.index, p))
             .collect::<BTreeMap<u64, &PosBuilder>>();// sort by index
@@ -395,7 +398,7 @@ impl<'a, 'b> Parser<'a, 'b>
                     if $m.is_some() && $m.as_ref().unwrap().contains(f) || $aig.contains(&f) {
                         continue;
                     }
-                    $r.push_back($i.filter(|flg| &flg.b.name == &f).next().unwrap().to_string());
+                    $r.push_back($i.filter(|flg| memcmp!(flg.b.name, f)).next().unwrap().to_string());
                 }
             }
         }
@@ -452,7 +455,7 @@ impl<'a, 'b> Parser<'a, 'b>
         'outer: for f in self.flags.iter() {
             debugln!("iter;f={};", f.b.name);
             if let Some(l) = f.s.long {
-                if l == "help" || l == "version" {
+                if l.as_bytes().memcmp("help".as_bytes()) || l.as_bytes().memcmp("version".as_bytes()) {
                     continue;
                 }
             }
@@ -592,7 +595,7 @@ impl<'a, 'b> Parser<'a, 'b>
         self.subcommands
             .iter()
             .any(|s| {
-                &s.p.meta.name[..] == &*arg_os ||
+                memcmp!(&s.p.meta.name[..], arg_os) ||
                 (s.p.meta.aliases.is_some() &&
                  s.p
                     .meta
@@ -600,7 +603,7 @@ impl<'a, 'b> Parser<'a, 'b>
                     .as_ref()
                     .unwrap()
                     .iter()
-                    .any(|&(a, _)| a == &*arg_os))
+                    .any(|&(a, _)| memcmp!(a, arg_os)))
             })
     }
 
@@ -619,13 +622,13 @@ impl<'a, 'b> Parser<'a, 'b>
         let mut sc = {
             let mut sc: &Parser = self;
             for (i, cmd) in cmds.iter().enumerate() {
-                if &*cmd.to_string_lossy() == "help" {
+                if memcmp!(cmd, "help") {
                     // cmd help help
                     help_help = true;
                 }
                 if let Some(c) = sc.subcommands
                     .iter()
-                    .find(|s| &*s.p.meta.name == cmd)
+                    .find(|s| memcmp!(&*s.p.meta.name,  cmd))
                     .map(|sc| &sc.p) {
                     sc = c;
                     if i == cmds.len() - 1 {
@@ -637,7 +640,7 @@ impl<'a, 'b> Parser<'a, 'b>
                         .meta
                         .aliases {
                         als.iter()
-                            .any(|&(a, _)| &a == &&*cmd.to_string_lossy())
+                            .any(|&(a, _)| memcmp!(a, cmd))
                     } else {
                         false
                     })
@@ -680,9 +683,9 @@ impl<'a, 'b> Parser<'a, 'b>
     #[inline]
     fn check_is_new_arg(&mut self, arg_os: &OsStr, needs_val_of: Option<&'a str>) -> bool {
         debugln!("fn=check_is_new_arg;nvo={:?}", needs_val_of);
-        let app_wide_settings = if unlikely!(self.is_set(AppSettings::AllowLeadingHyphen)) {
+        let app_wide_settings = if self.is_set(AppSettings::AllowLeadingHyphen) {
             true
-        } else if unlikely!(self.is_set(AppSettings::AllowNegativeNumbers)) {
+        } else if self.is_set(AppSettings::AllowNegativeNumbers) {
             let a = arg_os.to_string_lossy();
             if a.parse::<i64>().is_ok() || a.parse::<f64>().is_ok() {
                 self.valid_neg_num = true;
@@ -811,7 +814,7 @@ impl<'a, 'b> Parser<'a, 'b>
                 }
 
                 if pos_sc {
-                    if &*arg_os == "help" && self.is_set(AppSettings::NeedsSubcommandHelp) {
+                    if memcmp!(&*arg_os, "help") && self.is_set(AppSettings::NeedsSubcommandHelp) {
                         try!(self.parse_help_subcommand(it));
                     }
                     subcmd_name = Some(arg_os.to_str().expect(INVALID_UTF8).to_owned());
@@ -935,7 +938,7 @@ impl<'a, 'b> Parser<'a, 'b>
         }
         if let Some(pos_sc_name) = subcmd_name {
             // is this is a real subcommand, or an alias
-            let sc_name = if self.subcommands.iter().any(|sc| sc.p.meta.name == pos_sc_name) {
+            let sc_name = if self.subcommands.iter().any(|sc| memcmp!(sc.p.meta.name, pos_sc_name)) {
                 pos_sc_name
             } else {
                 self.subcommands
@@ -947,7 +950,7 @@ impl<'a, 'b> Parser<'a, 'b>
                         .as_ref()
                         .unwrap()
                         .iter()
-                        .any(|&(a, _)| &a == &&*pos_sc_name) {
+                        .any(|&(a, _)| memcmp!(&a, &&*pos_sc_name)) {
                         Some(sc.p.meta.name.clone())
                     } else {
                         None
@@ -1043,7 +1046,7 @@ impl<'a, 'b> Parser<'a, 'b>
         mid_string.push_str(" ");
         if let Some(ref mut sc) = self.subcommands
             .iter_mut()
-            .find(|s| &s.p.meta.name == &sc_name) {
+            .find(|s| memcmp!(&s.p.meta.name, &sc_name)) {
             let mut sc_matcher = ArgMatcher::new();
             // bin_name should be parent's bin_name + [<reqs>] + the sc's name separated by
             // a space
@@ -1087,7 +1090,7 @@ impl<'a, 'b> Parser<'a, 'b>
         debugln!("Searching through groups...");
         for (gn, grp) in &self.groups {
             for a in &grp.args {
-                if a == &name {
+                if memcmp!(a, &name) {
                     sdebugln!("\tFound '{}'", gn);
                     res.push(*gn);
                 }
@@ -1105,15 +1108,15 @@ impl<'a, 'b> Parser<'a, 'b>
         let mut args = vec![];
 
         for n in &self.groups[group].args {
-            if let Some(f) = self.flags.iter().find(|f| &f.b.name == n) {
+            if let Some(f) = self.flags.iter().find(|f| memcmp!(&f.b.name, n)) {
                 args.push(f.to_string());
-            } else if let Some(f) = self.opts.iter().find(|o| &o.b.name == n) {
+            } else if let Some(f) = self.opts.iter().find(|o| memcmp!(&o.b.name, n)) {
                 args.push(f.to_string());
             } else if self.groups.contains_key(&**n) {
                 g_vec.push(*n);
             } else if let Some(p) = self.positionals
                 .values()
-                .find(|p| &p.b.name == n) {
+                .find(|p| memcmp!(&p.b.name, n)) {
                 args.push(p.b.name.to_owned());
             }
         }
@@ -1228,11 +1231,11 @@ impl<'a, 'b> Parser<'a, 'b>
     fn check_for_help_and_version_str(&self, arg: &OsStr) -> ClapResult<()> {
         debug!("Checking if --{} is help or version...",
                arg.to_str().unwrap());
-        if arg == "help" && self.settings.is_set(AppSettings::NeedsLongHelp) {
+        if memcmp!(arg, "help") && self.settings.is_set(AppSettings::NeedsLongHelp) {
             sdebugln!("Help");
             try!(self._help());
         }
-        if arg == "version" && self.settings.is_set(AppSettings::NeedsLongVersion) {
+        if memcmp!(arg, "version") && self.settings.is_set(AppSettings::NeedsLongVersion) {
             sdebugln!("Version");
             try!(self._version());
         }
@@ -1337,7 +1340,7 @@ impl<'a, 'b> Parser<'a, 'b>
 
         // If AllowLeadingHyphen is set, we want to ensure `-val` gets parsed as `-val` and not `-v` `-a` `-l` assuming
         // `v` `a` and `l` are all, or mostly, valid shorts.
-        if unlikely!(self.is_set(AppSettings::AllowLeadingHyphen)) {
+        if self.is_set(AppSettings::AllowLeadingHyphen) {
             let mut good = true;
             for c in arg.chars() {
                 good = self.short_list.contains(&c);
@@ -1345,7 +1348,7 @@ impl<'a, 'b> Parser<'a, 'b>
             if !good {
                 return Ok(None);
             }
-        } else if unlikely!(self.valid_neg_num) {
+        } else if self.valid_neg_num {
             // TODO: Add docs about having AllowNegativeNumbers and `-2` as a valid short
             // May be better to move this to *after* not finding a valid flag/opt?
             debugln!("Valid negative num...");
@@ -2009,7 +2012,7 @@ impl<'a, 'b> Parser<'a, 'b>
         debugln!("Looking for sc...{}", sc);
         debugln!("Currently in Parser...{}", self.meta.bin_name.as_ref().unwrap());
         for s in self.subcommands.iter() {
-            if s.p.meta.bin_name.as_ref().unwrap_or(&String::new()) == sc ||
+            if memcmp!(s.p.meta.bin_name.as_ref().unwrap_or(&String::new()), sc) ||
                (s.p.meta.aliases.is_some() &&
                 s.p
                 .meta
@@ -2017,7 +2020,7 @@ impl<'a, 'b> Parser<'a, 'b>
                 .as_ref()
                 .unwrap()
                 .iter()
-                .any(|&(s, _)| s == sc.split(' ').rev().next().expect(INTERNAL_ERROR_MSG))) {
+                .any(|&(s, _)| memcmp!(s, sc.split(' ').rev().next().expect(INTERNAL_ERROR_MSG)))) {
                 return Some(s);
             }
             if let Some(app) = s.p.find_subcommand(sc) {
